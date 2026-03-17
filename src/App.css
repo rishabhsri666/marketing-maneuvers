@@ -301,6 +301,22 @@ input, select, button, textarea { font-family: inherit; }
 }
 
 .pie-wrap { text-align: center; }
+.pie-chart {
+  transition: transform 0.22s ease, filter 0.22s ease;
+  transform-origin: center center;
+}
+.pie-chart:hover {
+  transform: translateY(-4px) scale(1.03);
+  filter: drop-shadow(0 12px 20px rgba(0, 0, 0, 0.16));
+}
+.pie-segment {
+  transform-origin: center center;
+  transition: transform 0.22s ease, filter 0.22s ease;
+}
+.pie-segment:hover {
+  transform: scale(1.05);
+  filter: drop-shadow(0 10px 18px rgba(0, 0, 0, 0.2));
+}
 .pie-legend {
   font-size: 12px;
   color: var(--tx2);

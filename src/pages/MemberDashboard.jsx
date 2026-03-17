@@ -4,6 +4,7 @@ import { auth } from "../lib/firebase";
 import { useAuth } from "../hooks/useAuth";
 import { getMemberAttendance, getAllSessions } from "../lib/db";
 
+
 function AttendancePie({ present, absent }) {
   const total = present + absent;
   const pct = total === 0 ? 0 : Math.round((present / total) * 100);
@@ -15,7 +16,7 @@ function AttendancePie({ present, absent }) {
 
   return (
     <div className="pie-wrap">
-      <svg viewBox="0 0 140 140" width="160" height="160">
+      <svg className="pie-chart" viewBox="0 0 140 140" width="160" height="160">
         {/* track */}
         <circle cx="70" cy="70" r={r} fill="none" stroke="var(--bg3)" strokeWidth="14" />
         {/* progress */}
