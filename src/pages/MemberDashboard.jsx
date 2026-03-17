@@ -63,6 +63,7 @@ export default function MemberDashboard() {
   const [sessions, setSessions] = useState([]);
   const [myAttendance, setMyAttendance] = useState({});
   const [loading, setLoading] = useState(true);
+  const [darkMode, setDarkMode] = useState(true);
 
   useEffect(() => {
     async function load() {
@@ -79,6 +80,24 @@ export default function MemberDashboard() {
     load();
   }, [user.uid]);
 
+  useEffect(() => {
+    const savedTheme = localStorage.getItem('theme');
+    if (savedTheme) {
+      setDarkMode(savedTheme === 'dark');
+    }
+    if (darkMode) {
+      document.documentElement.setAttribute('data-theme', 'dark');
+    } else {
+      document.documentElement.removeAttribute('data-theme');
+    }
+  }, [darkMode]);
+
+  const toggleDarkMode = () => {
+    const newMode = !darkMode;
+    setDarkMode(newMode);
+    localStorage.setItem('theme', newMode ? 'dark' : 'light');
+  };
+
   const present = Object.values(myAttendance).filter((s) => s === "present").length;
   const absent = Object.values(myAttendance).filter((s) => s === "absent").length;
 
@@ -88,6 +107,9 @@ export default function MemberDashboard() {
         <div className="header-brand">◈ <span>Marketing Maneuvers</span></div>
         <div className="header-right">
           <span className="header-name">{profile?.name}</span>
+          <button className="theme-toggle-btn" onClick={toggleDarkMode}>
+            {darkMode ? '☀️' : '🌙'}
+          </button>
           <button className="logout-btn" onClick={() => signOut(auth)}>Sign out</button>
         </div>
       </header>

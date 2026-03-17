@@ -2,6 +2,21 @@
 @import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@400;500;600&display=swap');
 
 :root {
+  --bg:   #ffffff;
+  --bg2:  #f8fafc;
+  --bg3:  #f1f5f9;
+  --bg4:  #e2e8f0;
+  --acc:  #16a34a;      /* darker green for light mode */
+  --acc2: #4ade80;
+  --tx:   #1e293b;
+  --tx2:  #64748b;
+  --tx3:  #94a3b8;
+  --border: rgba(0,0,0,0.08);
+  --radius: 10px;
+  --shadow: 0 4px 24px rgba(0,0,0,0.08);
+}
+
+[data-theme="dark"] {
   --bg:   #0d0f14;
   --bg2:  #141720;
   --bg3:  #1e2230;
@@ -12,7 +27,6 @@
   --tx2:  #8b91a8;
   --tx3:  #555d78;
   --border: rgba(255,255,255,0.07);
-  --radius: 10px;
   --shadow: 0 4px 24px rgba(0,0,0,0.4);
 }
 
@@ -192,6 +206,17 @@ input, select, button, textarea { font-family: inherit; }
 .header-brand span { color: var(--tx); }
 .header-right { display: flex; align-items: center; gap: 12px; }
 .header-name { font-size: 14px; color: var(--tx2); }
+.theme-toggle-btn {
+  padding: 6px 10px;
+  background: var(--bg3);
+  color: var(--tx2);
+  border: 1px solid var(--border);
+  border-radius: 7px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.theme-toggle-btn:hover { color: var(--tx); background: var(--bg4); }
 .logout-btn {
   padding: 6px 14px;
   background: var(--bg3);

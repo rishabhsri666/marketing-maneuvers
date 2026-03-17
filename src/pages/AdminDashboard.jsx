@@ -45,6 +45,7 @@ export default function AdminDashboard() {
   const [newSession, setNewSession] = useState({ title: "", date: "", type: "Meeting" });
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [darkMode, setDarkMode] = useState(true);
 
   // Load everything once
   useEffect(() => {
@@ -64,6 +65,24 @@ export default function AdminDashboard() {
     }
     load();
   }, []);
+
+  useEffect(() => {
+    const savedTheme = localStorage.getItem('theme');
+    if (savedTheme) {
+      setDarkMode(savedTheme === 'dark');
+    }
+    if (darkMode) {
+      document.documentElement.setAttribute('data-theme', 'dark');
+    } else {
+      document.documentElement.removeAttribute('data-theme');
+    }
+  }, [darkMode]);
+
+  const toggleDarkMode = () => {
+    const newMode = !darkMode;
+    setDarkMode(newMode);
+    localStorage.setItem('theme', newMode ? 'dark' : 'light');
+  };
 
   // ── Session creation ───────────────────────────────────────────
   const handleCreateSession = async (e) => {
@@ -115,6 +134,9 @@ export default function AdminDashboard() {
         <div className="header-right">
           <span className="role-chip">Admin</span>
           <span className="header-name">{profile?.name}</span>
+          <button className="theme-toggle-btn" onClick={toggleDarkMode}>
+            {darkMode ? '☀️' : '🌙'}
+          </button>
           <button className="logout-btn" onClick={() => signOut(auth)}>Sign out</button>
         </div>
       </header>
