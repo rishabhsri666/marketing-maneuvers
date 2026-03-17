@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { signOut } from "firebase/auth";
 import { auth } from "../lib/firebase";
 import { useAuth } from "../hooks/useAuth";
+import logo from "../assets/logo.png";
 import { getMemberAttendance, getAllSessions } from "../lib/db";
 
 
@@ -104,7 +105,10 @@ export default function MemberDashboard() {
   return (
     <div className="dash-root">
       <header className="dash-header">
-        <div className="header-brand">◈ <span>Marketing Maneuvers</span></div>
+        <div className="header-brand">
+          <img className="brand-icon" src={logo} alt="Marketing Maneuvers Logo" />
+          <span>Marketing Maneuvers</span>
+        </div>
         <div className="header-right">
           <span className="header-name">{profile?.name}</span>
           <button className="theme-toggle-btn" onClick={toggleDarkMode}>

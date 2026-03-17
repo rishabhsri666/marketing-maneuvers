@@ -5,6 +5,7 @@ import {
 } from "firebase/auth";
 import { auth } from "../lib/firebase";
 import { createUserProfile } from "../lib/db";
+import logo from "../assets/logo.png";
 
 export default function LoginPage() {
   const [mode, setMode] = useState("login"); // "login" | "register"
@@ -42,7 +43,7 @@ export default function LoginPage() {
       <div className="login-card">
         {/* Logo / brand */}
         <div className="brand">
-          <span className="brand-icon">◈</span>
+          <img className="brand-icon" src={logo} alt="Marketing Maneuvers Logo" />
           <div>
             <div className="brand-title">Marketing Maneuvers</div>
             <div className="brand-sub">Attendance System</div>

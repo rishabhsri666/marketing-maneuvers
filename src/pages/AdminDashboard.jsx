@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { signOut } from "firebase/auth";
 import { auth } from "../lib/firebase";
 import { useAuth } from "../hooks/useAuth";
+import logo from "../assets/logo.png";
 import {
   getAllSessions, createSession,
   getAllMembers, getSessionAttendance, markAttendance,
@@ -130,7 +131,10 @@ export default function AdminDashboard() {
   return (
     <div className="dash-root">
       <header className="dash-header">
-        <div className="header-brand">◈ <span>Marketing Maneuvers</span></div>
+        <div className="header-brand">
+          <img className="brand-icon" src={logo} alt="Marketing Maneuvers Logo" />
+          <span>Marketing Maneuvers</span>
+        </div>
         <div className="header-right">
           <span className="role-chip">Admin</span>
           <span className="header-name">{profile?.name}</span>
