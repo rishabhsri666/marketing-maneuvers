@@ -70,13 +70,13 @@ export default function LoginPage() {
               </div>
               <div className="field">
                 <label>Roll No / Member ID</label>
-                <input name="rollNo" required value={form.rollNo} onChange={handleChange} placeholder="MM-2024-001" />
+                <input name="rollNo" required value={form.rollNo} onChange={handleChange} placeholder="2025101151XXXX" />
               </div>
             </>
           )}
           <div className="field">
             <label>Email</label>
-            <input name="email" type="email" required value={form.email} onChange={handleChange} placeholder="you@example.com" />
+            <input name="email" type="email" required value={form.email} onChange={handleChange} placeholder="you@kiet.edu" />
           </div>
           <div className="field">
             <label>Password</label>
