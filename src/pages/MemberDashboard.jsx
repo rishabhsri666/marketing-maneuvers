@@ -86,6 +86,9 @@ export default function MemberDashboard() {
     if (savedTheme) {
       setDarkMode(savedTheme === 'dark');
     }
+  }, []);
+
+  useEffect(() => {
     if (darkMode) {
       document.documentElement.setAttribute('data-theme', 'dark');
     } else {

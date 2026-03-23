@@ -9,7 +9,7 @@ import logo from "../assets/logo.png";
 
 export default function LoginPage() {
   const [mode, setMode] = useState("login"); // "login" | "register"
-  const [form, setForm] = useState({ name: "", rollNo: "", email: "", password: "" });
+  const [form, setForm] = useState({ name: "", rollNo: "", email: "", password: "", year: "1st" });
   const [error, setError] = useState("");
   const [busy, setBusy] = useState(false);
 
@@ -27,6 +27,7 @@ export default function LoginPage() {
           name: form.name,
           rollNo: form.rollNo,
           email: form.email,
+          year: form.year,
         });
       } else {
         await signInWithEmailAndPassword(auth, form.email, form.password);
@@ -72,6 +73,13 @@ export default function LoginPage() {
               <div className="field">
                 <label>Roll No / Member ID</label>
                 <input name="rollNo" required value={form.rollNo} onChange={handleChange} placeholder="2025101151XXXX" />
+              </div>
+              <div className="field">
+                <label>Year</label>
+                <select name="year" value={form.year} onChange={handleChange}>
+                  <option value="1st">1st Year</option>
+                  <option value="2nd">2nd Year</option>
+                </select>
               </div>
             </>
           )}

@@ -38,6 +38,7 @@ function Cell({ status, onClick, disabled }) {
 export default function AdminDashboard() {
   const { profile } = useAuth();
   const [tab, setTab] = useState("sessions"); // sessions | members | overview
+  const [memberYearFilter, setMemberYearFilter] = useState("all"); // all | 1st | 2nd
   const [sessions, setSessions] = useState([]);
   const [members, setMembers] = useState([]);
   const [attendance, setAttendance] = useState({}); // { sessionId: { userId: status } }
@@ -232,21 +233,23 @@ export default function AdminDashboard() {
                     <span className="leg empty">· Not marked</span>
                   </div>
                   <div className="member-att-list">
-                    {members.map((m) => {
-                      const status = attendance[activeSession.id]?.[m.id];
-                      return (
-                        <div key={m.id} className="member-att-row">
-                          <div className="m-info">
-                            <div className="m-avatar">{m.name?.[0]?.toUpperCase() || "?"}</div>
-                            <div>
-                              <div className="m-name">{m.name}</div>
-                              <div className="m-roll">{m.rollNo} · {m.email}</div>
+                    {members
+                      .filter((m) => memberYearFilter === "all" || m.year === memberYearFilter)
+                      .map((m) => {
+                        const status = attendance[activeSession.id]?.[m.id];
+                        return (
+                          <div key={m.id} className="member-att-row">
+                            <div className="m-info">
+                              <div className="m-avatar">{m.name?.[0]?.toUpperCase() || "?"}</div>
+                              <div>
+                                <div className="m-name">{m.name}</div>
+                                <div className="m-roll">{m.rollNo} · {m.email}</div>
+                              </div>
                             </div>
+                            <Cell status={status} onClick={() => toggle(activeSession.id, m.id)} />
                           </div>
-                          <Cell status={status} onClick={() => toggle(activeSession.id, m.id)} />
-                        </div>
-                      );
-                    })}
+                        );
+                      })}
                   </div>
                 </>
               )}
@@ -257,28 +260,45 @@ export default function AdminDashboard() {
         ) : tab === "members" ? (
           <div className="members-table-wrap">
             <div className="panel-heading">All Members <span className="count-chip">{members.length}</span></div>
+            
+            {/* Year filter buttons */}
+            <div className="year-filter-tabs" style={{ marginBottom: 16, display: "flex", gap: 8 }}>
+              {["all", "1st", "2nd"].map((year) => (
+                <button 
+                  key={year} 
+                  className={`filter-tab ${memberYearFilter === year ? "active" : ""}`}
+                  onClick={() => setMemberYearFilter(year)}
+                >
+                  {year === "all" ? "All Years" : `${year} Year`}
+                </button>
+              ))}
+            </div>
+            
             <table className="members-table">
               <thead>
                 <tr>
-                  <th>Name</th><th>Roll No</th><th>Email</th><th>Role</th>
+                  <th>Name</th><th>Roll No</th><th>Email</th><th>Role</th><th>Year</th>
                   {sessions.map((s) => <th key={s.id} title={s.title}>{s.date}</th>)}
                   <th>%</th>
                 </tr>
               </thead>
               <tbody>
-                {memberStats.map((m) => (
-                  <tr key={m.id}>
-                    <td><div style={{ display: "flex", alignItems: "center", gap: 8 }}><div className="m-avatar sm">{m.name?.[0]?.toUpperCase()}</div>{m.name}</div></td>
-                    <td>{m.rollNo}</td>
-                    <td style={{ fontSize: 12 }}>{m.email}</td>
-                    <td><span className={`role-chip-sm ${m.role}`}>{m.role}</span></td>
-                    {sessions.map((s) => {
-                      const st = attendance[s.id]?.[m.id];
-                      return <td key={s.id} style={{ textAlign: "center" }}><span className={`cell-badge ${st || "none"}`}>{st === "present" ? "✓" : st === "absent" ? "✗" : "–"}</span></td>;
-                    })}
-                    <td style={{ fontWeight: 700, color: m.color }}>{m.total > 0 ? m.pct + "%" : "–"}</td>
-                  </tr>
-                ))}
+                {memberStats
+                  .filter((m) => memberYearFilter === "all" || m.year === memberYearFilter)
+                  .map((m) => (
+                    <tr key={m.id}>
+                      <td><div style={{ display: "flex", alignItems: "center", gap: 8 }}><div className="m-avatar sm">{m.name?.[0]?.toUpperCase()}</div>{m.name}</div></td>
+                      <td>{m.rollNo}</td>
+                      <td style={{ fontSize: 12 }}>{m.email}</td>
+                      <td><span className={`role-chip-sm ${m.role}`}>{m.role}</span></td>
+                      <td>{m.year || "Unknown"}</td>
+                      {sessions.map((s) => {
+                        const st = attendance[s.id]?.[m.id];
+                        return <td key={s.id} style={{ textAlign: "center" }}><span className={`cell-badge ${st || "none"}`}>{st === "present" ? "✓" : st === "absent" ? "✗" : "–"}</span></td>;
+                      })}
+                      <td style={{ fontWeight: 700, color: m.color }}>{m.total > 0 ? m.pct + "%" : "–"}</td>
+                    </tr>
+                  ))}
               </tbody>
             </table>
           </div>

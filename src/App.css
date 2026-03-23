@@ -32,6 +32,8 @@
 
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
+html { scroll-behavior: smooth; }
+
 body {
   font-family: 'DM Sans', sans-serif;
   background: var(--bg);
@@ -41,6 +43,13 @@ body {
 }
 
 input, select, button, textarea { font-family: inherit; }
+
+/* Touch-friendly touch targets */
+button, input, select { min-height: 44px; }
+
+@media (min-width: 768px) {
+  button, input, select { min-height: 40px; }
+}
 
 /* ── Loading ring ─────────────────────────────────────────────── */
 .loading-ring {
@@ -71,6 +80,14 @@ input, select, button, textarea { font-family: inherit; }
   width: 100%;
   max-width: 420px;
   box-shadow: var(--shadow);
+}
+
+@media (max-width: 480px) {
+  .login-card {
+    border-radius: 16px;
+    padding: 24px;
+    max-width: 100%;
+  }
 }
 
 .brand {
@@ -194,6 +211,25 @@ input, select, button, textarea { font-family: inherit; }
   top: 0;
   z-index: 10;
 }
+
+@media (max-width: 640px) {
+  .dash-header {
+    padding: 0 16px;
+    height: 52px;
+  }
+  .header-brand {
+    font-size: 14px;
+  }
+  .header-brand .brand-icon {
+    display: none;
+  }
+  .header-name {
+    display: none;
+  }
+  .header-right {
+    gap: 8px;
+  }
+}
 .header-brand {
   font-family: 'Syne', sans-serif;
   font-weight: 800;
@@ -249,6 +285,18 @@ input, select, button, textarea { font-family: inherit; }
   padding: 10px 28px;
   background: var(--bg2);
   border-bottom: 1px solid var(--border);
+  overflow-x: auto;
+}
+
+@media (max-width: 640px) {
+  .tab-nav {
+    padding: 8px 16px;
+    gap: 2px;
+  }
+  .new-session-btn {
+    font-size: 12px;
+    padding: 6px 12px;
+  }
 }
 .nav-tab {
   padding: 7px 16px;
@@ -279,6 +327,12 @@ input, select, button, textarea { font-family: inherit; }
 /* ── Main ─────────────────────────────────────────────────────── */
 .dash-main { flex: 1; padding: 24px 28px; }
 
+@media (max-width: 640px) {
+  .dash-main {
+    padding: 16px;
+  }
+}
+
 /* ── Panels ───────────────────────────────────────────────────── */
 .panel-heading {
   font-family: 'Syne', sans-serif;
@@ -307,11 +361,33 @@ input, select, button, textarea { font-family: inherit; }
   max-width: 1100px;
   margin: 0 auto;
 }
+
+@media (max-width: 1024px) {
+  .member-grid {
+    grid-template-columns: 280px 1fr;
+    gap: 16px;
+  }
+}
+
+@media (max-width: 768px) {
+  .member-grid {
+    grid-template-columns: 1fr;
+  }
+  .stats-panel {
+    max-height: none;
+  }
+}
 .stats-panel, .sessions-panel {
   background: var(--bg2);
   border: 1px solid var(--border);
   border-radius: var(--radius);
   padding: 24px;
+}
+
+@media (max-width: 768px) {
+  .stats-panel, .sessions-panel {
+    padding: 16px;
+  }
 }
 
 .member-id-chip {
@@ -417,6 +493,19 @@ input, select, button, textarea { font-family: inherit; }
   max-width: 1200px;
   margin: 0 auto;
 }
+
+@media (max-width: 1024px) {
+  .admin-grid {
+    grid-template-columns: 260px 1fr;
+    gap: 16px;
+  }
+}
+
+@media (max-width: 768px) {
+  .admin-grid {
+    grid-template-columns: 1fr;
+  }
+}
 .session-list-panel, .mark-panel {
   background: var(--bg2);
   border: 1px solid var(--border);
@@ -424,6 +513,13 @@ input, select, button, textarea { font-family: inherit; }
   padding: 20px;
   max-height: calc(100vh - 160px);
   overflow-y: auto;
+}
+
+@media (max-width: 768px) {
+  .session-list-panel, .mark-panel {
+    padding: 16px;
+    max-height: none;
+  }
 }
 
 .s-card {
@@ -501,10 +597,22 @@ input, select, button, textarea { font-family: inherit; }
   max-width: 1200px;
   margin: 0 auto;
 }
+
+@media (max-width: 768px) {
+  .members-table-wrap {
+    padding: 16px;
+  }
+}
 .members-table {
   width: 100%;
   border-collapse: collapse;
   font-size: 13px;
+}
+
+@media (max-width: 768px) {
+  .members-table {
+    font-size: 12px;
+  }
 }
 .members-table th {
   text-align: left;
@@ -551,6 +659,18 @@ input, select, button, textarea { font-family: inherit; }
   max-width: 1100px;
   margin: 0 auto;
 }
+
+@media (max-width: 1024px) {
+  .overview-grid {
+    gap: 16px;
+  }
+}
+
+@media (max-width: 768px) {
+  .overview-grid {
+    grid-template-columns: 1fr;
+  }
+}
 .ov-panel {
   background: var(--bg2);
   border: 1px solid var(--border);
@@ -570,6 +690,7 @@ input, select, button, textarea { font-family: inherit; }
   z-index: 100;
   padding: 24px;
 }
+
 .modal {
   background: var(--bg2);
   border: 1px solid var(--border);
@@ -578,6 +699,16 @@ input, select, button, textarea { font-family: inherit; }
   width: 100%;
   max-width: 420px;
   box-shadow: var(--shadow);
+}
+
+@media (max-width: 480px) {
+  .modal-overlay {
+    padding: 16px;
+  }
+  .modal {
+    border-radius: 12px;
+    padding: 20px;
+  }
 }
 .modal-title {
   font-family: 'Syne', sans-serif;
@@ -601,9 +732,52 @@ input, select, button, textarea { font-family: inherit; }
 ::-webkit-scrollbar-thumb { background: var(--bg4); border-radius: 3px; }
 
 /* ── Responsive ───────────────────────────────────────────────── */
-@media (max-width: 768px) {
-  .member-grid, .admin-grid, .overview-grid { grid-template-columns: 1fr; }
-  .stat-chips { grid-template-columns: repeat(3, 1fr); }
-  .dash-main { padding: 16px; }
-  .tab-nav { flex-wrap: wrap; gap: 6px; }
+/* Already handled above, but final tweaks for extra small screens */
+@media (max-width: 480px) {
+  .panel-heading {
+    font-size: 15px;
+  }
+  .member-att-row {
+    flex-direction: column;
+    gap: 8px;
+  }
+  .m-info {
+    width: 100%;
+  }
+  .stat-chips {
+    grid-template-columns: 1fr;
+  }
+  .pie-chart {
+    width: 120px !important;
+    height: 120px !important;
+  }
+  .s-card {
+    padding: 12px;
+    margin-bottom: 8px;
+  }
+  .tab {
+    font-size: 12px;
+    padding: 6px;
+  }
+}
+
+/* Year filter tabs */
+.year-filter-tabs .filter-tab {
+  padding: 8px 16px;
+  border: 1px solid var(--bg3);
+  background: var(--bg);
+  color: var(--tx2);
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.year-filter-tabs .filter-tab.active {
+  background: var(--acc);
+  color: white;
+  border-color: var(--acc);
+}
+
+.year-filter-tabs .filter-tab:hover {
+  background: var(--bg2);
 }
