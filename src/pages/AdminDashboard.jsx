@@ -4,8 +4,8 @@ import { auth } from "../lib/firebase";
 import { useAuth } from "../hooks/useAuth";
 import logo from "../assets/logo.png";
 import {
-  getAllSessions, createSession,
-  getAllMembers, getSessionAttendance, markAttendance,
+  getAllSessions, createSession, updateSessionSubmitted, updateSessionAttendanceTimestamp,
+  getAllMembers, getSessionAttendance, markAttendance, clearAttendance,
 } from "../lib/db";
 
 // ─── Mini bar chart for overview ────────────────────────────────
@@ -54,7 +54,7 @@ export default function AdminDashboard() {
   useEffect(() => {
     async function load() {
       const [s, m] = await Promise.all([getAllSessions(), getAllMembers()]);
-      setSessions(s.sort((a, b) => new Date(b.date) - new Date(a.date)));
+      setSessions(s.map(sess => ({ ...sess, submitted: sess.submitted || false })).sort((a, b) => new Date(b.date) - new Date(a.date)));
       setMembers(m);
       // Pre-load attendance for all sessions
       const attMap = {};
@@ -116,6 +116,40 @@ export default function AdminDashboard() {
       ...prev,
       [sessionId]: { ...prev[sessionId], [userId]: next },
     }));
+    // Update timestamp if session was already submitted
+    const session = sessions.find(s => s.id === sessionId);
+    if (session?.submitted) {
+      await updateSessionAttendanceTimestamp(sessionId);
+    }
+  };
+
+  // ── Bulk attendance marking ────────────────────────────────────
+  const markAll = async (status) => {
+    const filteredMembers = members
+      .filter((m) => memberYearFilter === "all" || m.year === memberYearFilter)
+      .filter((m) => m.name.toLowerCase().includes(memberSearch.toLowerCase()));
+    for (const m of filteredMembers) {
+      if (status) {
+        await markAttendance(activeSession.id, m.id, status);
+      } else {
+        await clearAttendance(activeSession.id, m.id);
+      }
+      setAttendance((prev) => ({
+        ...prev,
+        [activeSession.id]: { ...prev[activeSession.id], [m.id]: status || undefined },
+      }));
+    }
+    // Update timestamp if session was already submitted
+    if (activeSession?.submitted) {
+      await updateSessionAttendanceTimestamp(activeSession.id);
+    }
+  };
+
+  // ── Submit attendance ───────────────────────────────────────────
+  const submitAttendance = async () => {
+    await updateSessionSubmitted(activeSession.id, true);
+    setSessions((prev) => prev.map((s) => s.id === activeSession.id ? { ...s, submitted: true } : s));
+    setActiveSession((prev) => ({ ...prev, submitted: true }));
   };
 
   // ── Per-member stats for overview ──────────────────────────────
@@ -213,6 +247,7 @@ export default function AdminDashboard() {
                       <div className="s-card-stat">
                         <span style={{ color: "#22c55e" }}>{present} present</span>
                         <span> / {members.length} members</span>
+                        {s.submitted && <span style={{ marginLeft: 8, color: "#f59e0b", fontSize: 12 }}>✓ Submitted</span>}
                       </div>
                     </div>
                   );
@@ -242,6 +277,18 @@ export default function AdminDashboard() {
                       style={{ width: "100%", padding: "8px 12px", border: "1px solid var(--bg3)", borderRadius: 6, background: "var(--bg)", color: "var(--tx)" }}
                     />
                   </div>
+                  <div style={{ marginBottom: 16, display: "flex", gap: 8, flexWrap: "wrap" }}>
+                    <button onClick={() => markAll("present")} disabled={activeSession.submitted} style={{ padding: "6px 12px", background: activeSession.submitted ? "#ccc" : "#22c55e", color: "white", border: "none", borderRadius: 4, cursor: activeSession.submitted ? "not-allowed" : "pointer" }}>Mark All Present</button>
+                    <button onClick={() => markAll("absent")} disabled={activeSession.submitted} style={{ padding: "6px 12px", background: activeSession.submitted ? "#ccc" : "#ef4444", color: "white", border: "none", borderRadius: 4, cursor: activeSession.submitted ? "not-allowed" : "pointer" }}>Mark All Absent</button>
+                    <button onClick={() => markAll(null)} disabled={activeSession.submitted} style={{ padding: "6px 12px", background: activeSession.submitted ? "#ccc" : "var(--bg3)", color: activeSession.submitted ? "#999" : "var(--tx)", border: "none", borderRadius: 4, cursor: activeSession.submitted ? "not-allowed" : "pointer" }}>Clear All</button>
+                  </div>
+                  {!activeSession.submitted ? (
+                    <button onClick={submitAttendance} style={{ padding: "8px 16px", background: "#3b82f6", color: "white", border: "none", borderRadius: 4, cursor: "pointer", marginTop: 16 }}>Submit Attendance</button>
+                  ) : (
+                    <div style={{ marginTop: 16, color: "#f59e0b", fontWeight: 600 }}>
+                      Attendance Submitted
+                    </div>
+                  )}
                   <div className="member-att-list">
                     {members
                       .filter((m) => memberYearFilter === "all" || m.year === memberYearFilter)
@@ -258,7 +305,7 @@ export default function AdminDashboard() {
                                 <div className="m-roll">{m.rollNo} · {m.email}</div>
                               </div>
                             </div>
-                            <Cell status={status} onClick={() => toggle(activeSession.id, m.id)} />
+                            <Cell status={status} onClick={() => toggle(activeSession.id, m.id)} disabled={activeSession.submitted} />
                           </div>
                         );
                       })}

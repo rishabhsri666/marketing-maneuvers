@@ -1,6 +1,6 @@
 import {
   collection, doc, setDoc, getDoc, getDocs,
-  addDoc, query, where, orderBy, serverTimestamp
+  addDoc, query, where, orderBy, serverTimestamp, deleteDoc
 } from "firebase/firestore";
 import { db } from "./firebase";
 
@@ -27,6 +27,7 @@ export async function getAllMembers() {
 export async function createSession(data) {
   return addDoc(collection(db, "sessions"), {
     ...data,
+    submitted: false,
     createdAt: serverTimestamp(),
   });
 }
@@ -35,6 +36,19 @@ export async function getAllSessions() {
   const q = query(collection(db, "sessions"), orderBy("date", "desc"));
   const snap = await getDocs(q);
   return snap.docs.map((d) => ({ id: d.id, ...d.data() }));
+}
+
+export async function updateSessionSubmitted(sessionId, submitted) {
+  await setDoc(doc(db, "sessions", sessionId), { 
+    submitted,
+    submittedAt: submitted ? serverTimestamp() : null,
+  }, { merge: true });
+}
+
+export async function updateSessionAttendanceTimestamp(sessionId) {
+  await setDoc(doc(db, "sessions", sessionId), { 
+    updatedAt: serverTimestamp(),
+  }, { merge: true });
 }
 
 // ─── Attendance helpers ──────────────────────────────────────────
@@ -47,6 +61,11 @@ export async function markAttendance(sessionId, userId, status) {
     status, // "present" | "absent"
     markedAt: serverTimestamp(),
   });
+}
+
+export async function clearAttendance(sessionId, userId) {
+  const id = `${sessionId}_${userId}`;
+  await deleteDoc(doc(db, "attendance", id));
 }
 
 export async function getSessionAttendance(sessionId) {
