@@ -72,7 +72,7 @@ export default function MemberDashboard() {
         getAllSessions(),
         getMemberAttendance(user.uid),
       ]);
-      setSessions(allSessions);
+      setSessions(allSessions.sort((a, b) => new Date(b.date) - new Date(a.date)));
       const map = {};
       myRecs.forEach((r) => (map[r.sessionId] = r.status));
       setMyAttendance(map);

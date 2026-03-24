@@ -39,7 +39,8 @@ export default function AdminDashboard() {
   const { profile } = useAuth();
   const [tab, setTab] = useState("sessions"); // sessions | members | overview
   const [memberYearFilter, setMemberYearFilter] = useState("all"); // all | 1st | 2nd
-  const [sessions, setSessions] = useState([]);
+  const [memberSearch, setMemberSearch] = useState("");
+      const [sessions, setSessions] = useState([]);
   const [members, setMembers] = useState([]);
   const [attendance, setAttendance] = useState({}); // { sessionId: { userId: status } }
   const [activeSession, setActiveSession] = useState(null);
@@ -53,7 +54,7 @@ export default function AdminDashboard() {
   useEffect(() => {
     async function load() {
       const [s, m] = await Promise.all([getAllSessions(), getAllMembers()]);
-      setSessions(s);
+      setSessions(s.sort((a, b) => new Date(b.date) - new Date(a.date)));
       setMembers(m);
       // Pre-load attendance for all sessions
       const attMap = {};
@@ -93,7 +94,7 @@ export default function AdminDashboard() {
     try {
       const ref = await createSession(newSession);
       const created = { id: ref.id, ...newSession };
-      setSessions((prev) => [created, ...prev]);
+      setSessions((prev) => [created, ...prev].sort((a, b) => new Date(b.date) - new Date(a.date)));
       setAttendance((prev) => ({ ...prev, [ref.id]: {} }));
       setNewSession({ title: "", date: "", type: "Meeting" });
       setShowForm(false);
@@ -127,7 +128,7 @@ export default function AdminDashboard() {
     const pct = total === 0 ? 0 : Math.round((present / total) * 100);
     const color = pct >= 75 ? "#22c55e" : pct >= 50 ? "#f59e0b" : "#ef4444";
     return { ...m, present, total, pct, color };
-  });
+  }).sort((a, b) => a.name.localeCompare(b.name));
 
   return (
     <div className="dash-root">
@@ -232,9 +233,20 @@ export default function AdminDashboard() {
                     <span className="leg absent">✗ Absent</span>
                     <span className="leg empty">· Not marked</span>
                   </div>
+                  <div style={{ marginBottom: 16 }}>
+                    <input
+                      type="text"
+                      placeholder="Search members..."
+                      value={memberSearch}
+                      onChange={(e) => setMemberSearch(e.target.value)}
+                      style={{ width: "100%", padding: "8px 12px", border: "1px solid var(--bg3)", borderRadius: 6, background: "var(--bg)", color: "var(--tx)" }}
+                    />
+                  </div>
                   <div className="member-att-list">
                     {members
                       .filter((m) => memberYearFilter === "all" || m.year === memberYearFilter)
+                      .filter((m) => m.name.toLowerCase().includes(memberSearch.toLowerCase()))
+                      .sort((a, b) => a.name.localeCompare(b.name))
                       .map((m) => {
                         const status = attendance[activeSession.id]?.[m.id];
                         return (
@@ -261,6 +273,17 @@ export default function AdminDashboard() {
           <div className="members-table-wrap">
             <div className="panel-heading">All Members <span className="count-chip">{members.length}</span></div>
             
+            {/* Search bar */}
+            <div style={{ marginBottom: 16 }}>
+              <input
+                type="text"
+                placeholder="Search members..."
+                value={memberSearch}
+                onChange={(e) => setMemberSearch(e.target.value)}
+                style={{ width: "100%", padding: "8px 12px", border: "1px solid var(--bg3)", borderRadius: 6, background: "var(--bg)", color: "var(--tx)" }}
+              />
+            </div>
+            
             {/* Year filter buttons */}
             <div className="year-filter-tabs" style={{ marginBottom: 16, display: "flex", gap: 8 }}>
               {["all", "1st", "2nd"].map((year) => (
@@ -285,6 +308,7 @@ export default function AdminDashboard() {
               <tbody>
                 {memberStats
                   .filter((m) => memberYearFilter === "all" || m.year === memberYearFilter)
+                  .filter((m) => m.name.toLowerCase().includes(memberSearch.toLowerCase()))
                   .map((m) => (
                     <tr key={m.id}>
                       <td><div style={{ display: "flex", alignItems: "center", gap: 8 }}><div className="m-avatar sm">{m.name?.[0]?.toUpperCase()}</div>{m.name}</div></td>
@@ -312,7 +336,7 @@ export default function AdminDashboard() {
                 <div className="empty">No members yet.</div>
               ) : (
                 memberStats
-                  .sort((a, b) => b.pct - a.pct)
+                  .sort((a, b) => b.pct - a.pct || a.name.localeCompare(b.name))
                   .map((m) => <MiniBar key={m.id} label={`${m.name} (${m.rollNo})`} pct={m.pct} color={m.color} />)
               )}
             </div>
