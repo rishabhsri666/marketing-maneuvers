@@ -172,7 +172,7 @@ export default function AdminDashboard() {
           <span>Marketing Maneuvers</span>
         </div>
         <div className="header-right">
-          <span className="role-chip">Admin</span>
+          <span className="role-chip">{profile?.role === "viewer" ? "Viewer" : "Admin"}</span>
           <span className="header-name">{profile?.name}</span>
           <button className="theme-toggle-btn" onClick={toggleDarkMode}>
             {darkMode ? '☀️' : '🌙'}
@@ -188,7 +188,7 @@ export default function AdminDashboard() {
             {t === "sessions" ? "📋 Sessions" : t === "members" ? "👥 Members" : "📊 Overview"}
           </button>
         ))}
-        <button className="new-session-btn" onClick={() => setShowForm(true)}>+ New Session</button>
+        {profile?.role !== "viewer" && <button className="new-session-btn" onClick={() => setShowForm(true)}>+ New Session</button>}
       </nav>
 
       {/* New Session Modal */}
@@ -278,12 +278,16 @@ export default function AdminDashboard() {
                     />
                   </div>
                   <div style={{ marginBottom: 16, display: "flex", gap: 8, flexWrap: "wrap" }}>
-                    <button onClick={() => markAll("present")} disabled={activeSession.submitted} style={{ padding: "6px 12px", background: activeSession.submitted ? "#ccc" : "#22c55e", color: "white", border: "none", borderRadius: 4, cursor: activeSession.submitted ? "not-allowed" : "pointer" }}>Mark All Present</button>
-                    <button onClick={() => markAll("absent")} disabled={activeSession.submitted} style={{ padding: "6px 12px", background: activeSession.submitted ? "#ccc" : "#ef4444", color: "white", border: "none", borderRadius: 4, cursor: activeSession.submitted ? "not-allowed" : "pointer" }}>Mark All Absent</button>
-                    <button onClick={() => markAll(null)} disabled={activeSession.submitted} style={{ padding: "6px 12px", background: activeSession.submitted ? "#ccc" : "var(--bg3)", color: activeSession.submitted ? "#999" : "var(--tx)", border: "none", borderRadius: 4, cursor: activeSession.submitted ? "not-allowed" : "pointer" }}>Clear All</button>
+                    {profile?.role !== "viewer" && (
+                      <>
+                        <button onClick={() => markAll("present")} disabled={activeSession.submitted} style={{ padding: "6px 12px", background: activeSession.submitted ? "#ccc" : "#22c55e", color: "white", border: "none", borderRadius: 4, cursor: activeSession.submitted ? "not-allowed" : "pointer" }}>Mark All Present</button>
+                        <button onClick={() => markAll("absent")} disabled={activeSession.submitted} style={{ padding: "6px 12px", background: activeSession.submitted ? "#ccc" : "#ef4444", color: "white", border: "none", borderRadius: 4, cursor: activeSession.submitted ? "not-allowed" : "pointer" }}>Mark All Absent</button>
+                        <button onClick={() => markAll(null)} disabled={activeSession.submitted} style={{ padding: "6px 12px", background: activeSession.submitted ? "#ccc" : "var(--bg3)", color: activeSession.submitted ? "#999" : "var(--tx)", border: "none", borderRadius: 4, cursor: activeSession.submitted ? "not-allowed" : "pointer" }}>Clear All</button>
+                      </>
+                    )}
                   </div>
                   {!activeSession.submitted ? (
-                    <button onClick={submitAttendance} style={{ padding: "8px 16px", background: "#3b82f6", color: "white", border: "none", borderRadius: 4, cursor: "pointer", marginTop: 16 }}>Submit Attendance</button>
+                    profile?.role !== "viewer" && <button onClick={submitAttendance} style={{ padding: "8px 16px", background: "#3b82f6", color: "white", border: "none", borderRadius: 4, cursor: "pointer", marginTop: 16 }}>Submit Attendance</button>
                   ) : (
                     <div style={{ marginTop: 16, color: "#f59e0b", fontWeight: 600 }}>
                       Attendance Submitted
@@ -305,7 +309,7 @@ export default function AdminDashboard() {
                                 <div className="m-roll">{m.rollNo} · {m.email}</div>
                               </div>
                             </div>
-                            <Cell status={status} onClick={() => toggle(activeSession.id, m.id)} disabled={activeSession.submitted} />
+                            <Cell status={status} onClick={() => toggle(activeSession.id, m.id)} disabled={activeSession.submitted || profile?.role === "viewer"} />
                           </div>
                         );
                       })}

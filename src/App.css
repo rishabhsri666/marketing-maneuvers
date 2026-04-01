@@ -642,6 +642,7 @@ button, input, select { min-height: 44px; }
 }
 .role-chip-sm.admin  { background: rgba(74,222,128,0.12); color: var(--acc); }
 .role-chip-sm.member { background: var(--bg3); color: var(--tx2); }
+.role-chip-sm.viewer { background: rgba(59,130,246,0.12); color: #3b82f6; }
 
 .cell-badge {
   font-size: 13px;

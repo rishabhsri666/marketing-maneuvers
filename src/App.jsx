@@ -16,7 +16,7 @@ function AppRouter() {
   }
 
   if (!user || !profile) return <LoginPage />;
-  if (profile.role === "admin") return <AdminDashboard />;
+  if (profile.role === "admin" || profile.role === "viewer") return <AdminDashboard />;
   return <MemberDashboard />;
 }
 

@@ -8,7 +8,7 @@ import { db } from "./firebase";
 export async function createUserProfile(uid, data) {
   await setDoc(doc(db, "users", uid), {
     ...data,
-    role: "member", // default; manually change to "admin" in Firestore console
+    role: "member", // default; manually change to "admin" or "viewer" in Firestore console
     createdAt: serverTimestamp(),
   });
 }
